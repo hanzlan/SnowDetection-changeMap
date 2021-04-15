@@ -1,0 +1,20 @@
+library(raster)
+library(rgdal)
+library(rgrass7)
+setwd("C:/Users/andre/OneDrive/Dokumente/Masterarbeit/GEE/kazbegi/")
+dem <- raster("./Kazbegi_DEM_30.tif")
+snow <- raster("C:/Users/andre/OneDrive/Dokumente/Masterarbeit/GEE/Download_Leonie/original_files_Snow/20000226p0.tif")
+shape = readOGR(dsn = "C:/Users/andre/OneDrive/Dokumente/Masterarbeit/GEE/kazbegi", layer = "kazbegi")
+
+print(projection(dem))
+print(projection(snow))
+plot(dem)
+plot(snow)
+plot(shape)
+dem_new = resample(dem, snow, "bilinear")
+#dem_new = crop(dem_new, shape)
+dem_new = mask(dem_new,shape)      
+plot(dem_new)
+writeRaster(dem_new, filename="dem_kazbegi_clip.tif", format="GTiff", overwrite=TRUE)
+
+
