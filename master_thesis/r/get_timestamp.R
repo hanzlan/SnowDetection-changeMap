@@ -1,21 +1,24 @@
 library(dplyr)
 library(lubridate)
+library(zoo)
 
-setwd('C:/Users/andre/OneDrive/Dokumente/Masterarbeit/Data/')
-hours = read.csv("time_lst_aqua.csv")
+setwd('C:/Users/andre/OneDrive/Dokumente/Masterarbeit/Data/time/')
+hours = read.csv("time_lst_aqua_total.csv")
+hours$.geo <- NULL
 colnames(hours)
-mean <- as.data.frame(hours$mean)
-time <- as.data.frame(hours$system.index)
-time <- substring(time$`hours$system.index`, 0, 10)
-time <- as.data.frame(time)
-hours <- cbind(time, mean)
+hours <- hours %>% select(1, 4)
+hours$date <- substring(hours$system.index, 0, 10)
+hours$system.index <- NULL
 
 #rename columns
 hours <- hours %>% 
   rename(
-    date = time,
-    solar = `hours$mean`
+    date = date,
+    solar = mean
   )
+
+#interpolate missing solar times
+hours$solar <- na.approx(hours$solar)
 
 #calculate utc decimal hours (44,54574E = mean longitude of kazbegi)
 hours$utc <- hours$solar-44.54475/15
