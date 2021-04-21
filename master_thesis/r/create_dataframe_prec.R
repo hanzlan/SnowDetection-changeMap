@@ -5,9 +5,10 @@ library(dismo)
 library(rgdal)
 library(rts)
 library(readr)
-library(dplyr)
 library(reshape2)
 library(stringr)
+library(plyr)
+library(dplyr)
 
 setwd("C:/Users/andre/OneDrive/Dokumente/Masterarbeit/Data/")
 sppts <- readOGR(dsn = "kazbegi", layer = "randompoints500")
@@ -18,8 +19,9 @@ terra_list <- list.files("C:/Users/andre/OneDrive/Dokumente/Masterarbeit/Data/pr
 # CREATE RASTER TIME SERIES OBJECT (RTS)
 d_terra <- parse_number(terra_list)
 
-time_terra <- read.csv("time/hours_lst_terra.csv")
-time_terra$date <- paste0(substr(time_terra$date, 1, 4), substr(time_terra$date, 6, 7), substr(time_terra$date, 9, 10))
+time_terra <- read.csv("time/hours_lst_prec.csv")
+time_terra <- time_terra[with(time_terra, order(time_terra$date)), ]
+
 
 getdates <- function(filedays, datelist){
   d <- data.frame()
@@ -45,6 +47,6 @@ terra_train <- cbind(date = rownames(terra_train),terra_train)
 library(reshape2)
 terra <- melt(terra_train)
 names(terra)[names(terra) == "value"] <- "prec"
-terra$sat <- rep('terra',nrow(terra))
+terra$sat <- rep('chirps',nrow(terra))
 
 write.csv(terra,"dataframes/prec_500.csv", row.names = FALSE)
