@@ -58,7 +58,7 @@ df_no_na$minute <- as.numeric(substr(df_no_na$date, 12, 13))*60+as.numeric(subst
 
 ####calculate the day of year with average least snow
 mean_snow <- aggregate(df_no_na$snow, list(df_no_na$doy), mean)
-which.min(mean_snow$x) #### 229 = 17 August
+which.min(mean_snow$x) #### 229 = 16th August in leap years (366 days)
 names(mean_snow)[names(mean_snow) == 'Group.1'] <- 'doy'
 mean_snow$new_doy <- mean_snow$doy
 
@@ -67,7 +67,7 @@ new_doy <- c(139:366, 1:138)
 mean_snow$new_doy <- new_doy
 
 #calculate circular radians to account for circular behaviour of day of the year
-mean_snow$degrees <- (mean_snow$new_doy/365.2422)*360
+mean_snow$degrees <- (mean_snow$new_doy/366)*360
 mean_snow$radians <- mean_snow$degrees*pi/180
 mean_snow$doy_cos <- cos(mean_snow$radians)
 
