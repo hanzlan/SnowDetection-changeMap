@@ -28,35 +28,17 @@ cols.fac <- c("variable", "sat")
 df[cols.num] <- sapply(df[cols.num],as.numeric)
 df[cols.fac] <- sapply(df[cols.fac],factor)
 
-predictors_snow <- c("sat","lst","lag.lst","rad",
-                "lag.rad","wr","lag.wr",
-                "prec", "lag.prec", "lon", "lat",
+predictors <- c("rad",
+                "lag.rad","prec", "lag.prec", "lon", "lat",
                 "dem", "eastness", "northness", "slope",
                 "year", "minute", "doy_cos")
-set.seed(10)
-model <- train(df[,predictors],df$snow,
-               method="rf",tuneGrid=data.frame("mtry"=2),
-               importance=TRUE, ntree=50,
-               trControl=trainControl(method="cv",number=3))
-
-model
-plot(varImp(model))
 
 set.seed(10)
 indices <- CreateSpacetimeFolds(df,spacevar = "variable",
                                 timevar = "doy",
                                 k=3)
-set.seed(10)
-model_LLTO <- train(df[,predictors],df$snow,
-                   method="rf",tuneGrid=data.frame("mtry"=2), importance=TRUE,
-                   trControl=trainControl(method="cv",
-                                          index = indices$index))
-model_LLTO
 
-plot(varImp(model_LLTO))
-
-set.seed(10)
-ffsmodel_LLTO <- ffs(df[,predictors_snow],df$snow,metric="Rsquared",
+ffsmodel_LLTO <- ffs(df[,predictors],df$lst,metric="Rsquared",
                     method="rf", tuneGrid=data.frame("mtry"=2),
                     verbose=FALSE,ntree=50,
                     trControl=trainControl(method="cv",
@@ -65,14 +47,26 @@ ffsmodel_LLTO
 
 ffsmodel_LLTO$selectedvars
 
-saveRDS(model, "./snow_models/model.rds")
-saveRDS(model_LLTO, "./snow_models/model_llto.rds")
-saveRDS(ffsmodel_LLTO, "./snow_models/ffsmodel_llto.rds")
+saveRDS(ffsmodel_LLTO, "./lst_models/ffsmodel_llto.rds")
 
 plot_ffs(ffsmodel_LLTO)
 plot(varImp(ffsmodel_LLTO))
 
-prediction_ffs <- predict(predictors_sp,ffsmodel_LLTO)
+stacklist <- list.files("validation_stacks/terra/", pattern = ".tif$", full.names = TRUE, ignore.case = TRUE)
+
+###run over stacklist and predict lst
+for( i in 1:length(stacklist)) {
+  date <- substr(stacklist[i], 35, 42)
+  predictors_sp <- stack(stacklist[i])
+  names(predictors_sp) <- c('doy_cos', 'rad', 'lag.rad', 'dem',
+                            'minute', 'year', 'lat', 'lon')
+  prediction_ffs <- predict(predictors_sp,ffsmodel_LLTO)
+  writeRaster(prediction_ffs, 
+              filename=file.path(paste0("validation_stacks/pred_lst_terra/lst_", date, ".tif")),
+              format="GTiff", overwrite=TRUE)
+  }
+
+
 spplot(prediction_ffs)
 
 ### AOA for which the spatial CV error applies:
