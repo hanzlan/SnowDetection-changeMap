@@ -13,12 +13,15 @@ setwd("C:/Users/andre/OneDrive/Dokumente/Masterarbeit/Data/")
 sppts <- readOGR(dsn = "kazbegi", layer = "randompoints500")
 
 # LOAD RASTERS INTO A LIST OBJECT. 
-snow_terra_list <- list.files("C:/Users/andre/OneDrive/Dokumente/Masterarbeit/Data/snow", pattern = "terra.tif$", full.names = TRUE)
-snow_aqua_list <- list.files("C:/Users/andre/OneDrive/Dokumente/Masterarbeit/Data/snow", pattern = "aqua.tif$", full.names = TRUE)
+snow_terra_list <- list.files("C:/Users/andre/OneDrive/Dokumente/Masterarbeit/Data/snow_new", pattern = "terr.tif$", full.names = TRUE)
+snow_aqua_list <- list.files("C:/Users/andre/OneDrive/Dokumente/Masterarbeit/Data/snow_new", pattern = "aqua.tif$", full.names = TRUE)
 
 # CREATE RASTER TIME SERIES OBJECT (RTS)
 d_terra <- parse_number(snow_terra_list)
 d_aqua <- parse_number(snow_aqua_list)
+
+d_aqua <- as.character(d_aqua)
+d_terra <- as.character(d_terra)
 
 time_aqua <- read.csv("time/hours_lst_aqua.csv")
 time_terra <- read.csv("time/hours_lst_terra.csv")
@@ -67,4 +70,3 @@ snow_terra$sat <- rep('terra',nrow(snow_terra))
 
 write.csv(snow_terra,"dataframes/snow_terra_500.csv", row.names = FALSE)
 write.csv(snow_aqua,"dataframes/snow_aqua_500.csv", row.names = FALSE)
-

@@ -13,7 +13,7 @@ setwd("C:/Users/andre/OneDrive/Dokumente/Masterarbeit/Data/")
 sppts <- readOGR(dsn = "kazbegi", layer = "randompoints500")
 
 # LOAD RASTERS INTO A LIST OBJECT. 
-terra_list <- list.files("C:/Users/andre/OneDrive/Dokumente/Masterarbeit/Data/rad", pattern = "terra.tif$", full.names = TRUE)
+terra_list <- list.files("C:/Users/andre/OneDrive/Dokumente/Masterarbeit/Data/rad", pattern = "terr.tif$", full.names = TRUE)
 aqua_list <- list.files("C:/Users/andre/OneDrive/Dokumente/Masterarbeit/Data/rad", pattern = "aqua.tif$", full.names = TRUE)
 
 # CREATE RASTER TIME SERIES OBJECT (RTS)

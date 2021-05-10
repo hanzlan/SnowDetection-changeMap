@@ -9,8 +9,8 @@ summary(df$wr)
 
 #get outlier values
 outliers_lst <- boxplot(df$lst, plot=FALSE)$out
-max(outliers_lst[outliers_lst<0]) #-41.99
-min(outliers_lst[outliers_lst>0]) #54.33
+max(outliers_lst[outliers_lst<0]) #-42.07
+min(outliers_lst[outliers_lst>0]) #54.43
 
 #replace negative outliers in lst and the according values in wr by NA
 df$lst[df$lst>=min(outliers_lst[outliers_lst>0])] <- NA
@@ -26,8 +26,8 @@ df$wr[df$wr>=min(outliers_wr[outliers_wr>0])] <- NA
 
 #get outlier values
 outliers_laglst <- boxplot(df$lag.lst, plot=FALSE)$out
-max(outliers_laglst[outliers_laglst<0]) #-41.99
-min(outliers_laglst[outliers_laglst>0]) #54.33
+max(outliers_laglst[outliers_laglst<0]) #-42.05
+min(outliers_laglst[outliers_laglst>0]) #54.55
 
 #replace negative outliers in lst and the according values in wr by NA
 df$lag.lst[df$lag.lst>=min(outliers_laglst[outliers_laglst>0])] <- NA
@@ -35,8 +35,8 @@ df$lag.lst[df$lag.lst<=max(outliers_laglst[outliers_laglst<0])] <- NA
 
 #get outlier values
 outliers_lagwr <- boxplot(df$lag.wr, plot=FALSE)$out
-max(outliers_lagwr[outliers_lagwr<0]) #-41.99
-min(outliers_lagwr[outliers_lagwr>0]) #54.33
+max(outliers_lagwr[outliers_lagwr<0]) #-7.48
+min(outliers_lagwr[outliers_lagwr>0]) #32.22
 
 #replace negative outliers in lst and the according values in wr by NA
 df$lag.wr[df$lag.wr>=min(outliers_lagwr[outliers_lagwr>0])] <- NA
@@ -63,7 +63,7 @@ names(mean_snow)[names(mean_snow) == 'Group.1'] <- 'doy'
 mean_snow$new_doy <- mean_snow$doy
 
 #set day of the year with least snow as first day
-new_doy <- c(139:366, 1:138)
+new_doy <- c(138:366, 1:137)
 mean_snow$new_doy <- new_doy
 
 #calculate circular radians to account for circular behaviour of day of the year

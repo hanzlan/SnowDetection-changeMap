@@ -32,7 +32,7 @@ hours_terra$mean <- (hours_terra$mean-44.54475/15)*60
 for( i in 1:nrow(hours_terra)) {
   rf <- dem
   rf[rf > 0] <- hours_terra$mean[i]
-  writeRaster(rf, filename=file.path("time/terra", paste0(hours_terra$date[i], "_min_terra.tif")), format="GTiff", overwrite=TRUE)
+  writeRaster(rf, filename=file.path("time/terra/2020", paste0(hours_terra$date[i], "_min_terra.tif")), format="GTiff", overwrite=TRUE)
 }
 
 hours_aqua$date <- substr(hours_aqua$system.index, 1, 10)
@@ -49,5 +49,5 @@ hours_aqua$mean <- (hours_aqua$mean-44.54475/15)*60
 for( i in 1:nrow(hours_aqua)) {
   rf <- dem
   rf[rf > 0] <- hours_aqua$mean[i]
-  writeRaster(rf, filename=file.path("time/aqua", paste0(hours_aqua$date[i], "_min_aqua.tif")), format="GTiff", overwrite=TRUE)
+  writeRaster(rf, filename=file.path("time/aqua/2020", paste0(hours_aqua$date[i], "_min_aqua.tif")), format="GTiff", overwrite=TRUE)
 }
