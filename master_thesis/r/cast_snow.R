@@ -33,27 +33,11 @@ predictors_snow <- c("sat","lst","lag.lst","rad",
                 "prec", "lag.prec", "lon", "lat",
                 "dem", "eastness", "northness", "slope",
                 "year", "minute", "doy_cos")
-set.seed(10)
-model <- train(df[,predictors],df$snow,
-               method="rf",tuneGrid=data.frame("mtry"=2),
-               importance=TRUE, ntree=50,
-               trControl=trainControl(method="cv",number=3))
-
-model
-plot(varImp(model))
 
 set.seed(10)
 indices <- CreateSpacetimeFolds(df,spacevar = "variable",
                                 timevar = "doy",
                                 k=3)
-set.seed(10)
-model_LLTO <- train(df[,predictors],df$snow,
-                   method="rf",tuneGrid=data.frame("mtry"=2), importance=TRUE,
-                   trControl=trainControl(method="cv",
-                                          index = indices$index))
-model_LLTO
-
-plot(varImp(model_LLTO))
 
 set.seed(10)
 ffsmodel_LLTO <- ffs(df[,predictors_snow],df$snow,metric="Rsquared",
@@ -65,12 +49,40 @@ ffsmodel_LLTO
 
 ffsmodel_LLTO$selectedvars
 
-saveRDS(model, "./snow_models/model.rds")
-saveRDS(model_LLTO, "./snow_models/model_llto.rds")
 saveRDS(ffsmodel_LLTO, "./snow_models/ffsmodel_llto.rds")
+
+ffsmodel_LLTO <- readRDS("snow_models/ffsmodel_llto.rds")
 
 plot_ffs(ffsmodel_LLTO)
 plot(varImp(ffsmodel_LLTO))
+
+stacklist <- list.files("validation_stacks/snow_terra/", pattern = ".tif$", full.names = TRUE, ignore.case = TRUE)
+
+###run over stacklist and predict snow terra
+for( i in 1:length(stacklist)) {
+  date <- substr(stacklist[i], 51, 58)
+  predictors_sp <- stack(stacklist[i])
+  names(predictors_sp) <- c('lag.lst', 'lst', 'doy_cos', 'rad', 'lag.rad', 'dem',
+                            'lat', 'minute', 'year')
+  prediction_ffs <- predict(predictors_sp,ffsmodel_LLTO)
+  writeRaster(prediction_ffs, 
+              filename=file.path(paste0("validation_stacks/pred_snow_terra/snow_terra_", date, ".tif")),
+              format="GTiff", overwrite=TRUE)
+}
+
+stacklist_aqua <- list.files("validation_stacks/snow_aqua/", pattern = ".tif$", full.names = TRUE, ignore.case = TRUE)
+
+###run over stacklist and predict snow aqua
+for( i in 1:length(stacklist_aqua)) {
+  date <- substr(stacklist_aqua[i], 50, 57)
+  predictors_sp <- stack(stacklist_aqua[i])
+  names(predictors_sp) <- c('lag.lst', 'lst', 'doy_cos', 'rad', 'lag.rad', 'dem',
+                            'lat', 'minute', 'year')
+  prediction_ffs <- predict(predictors_sp,ffsmodel_LLTO)
+  writeRaster(prediction_ffs, 
+              filename=file.path(paste0("validation_stacks/pred_snow_aqua/snow_aqua_", date, ".tif")),
+              format="GTiff", overwrite=TRUE)
+}
 
 prediction_ffs <- predict(predictors_sp,ffsmodel_LLTO)
 spplot(prediction_ffs)

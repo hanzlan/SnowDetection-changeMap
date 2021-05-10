@@ -66,6 +66,19 @@ for( i in 1:length(stacklist)) {
               format="GTiff", overwrite=TRUE)
   }
 
+stacklist_aqua <- list.files("validation_stacks/aqua/", pattern = ".tif$", full.names = TRUE, ignore.case = TRUE)
+
+###run over stacklist and predict lst
+for( i in 1:length(stacklist_aqua)) {
+  date <- substr(stacklist_aqua[i], 34, 41)
+  predictors_sp <- stack(stacklist_aqua[i])
+  names(predictors_sp) <- c('doy_cos', 'rad', 'lag.rad', 'dem',
+                            'minute', 'year', 'lat', 'lon')
+  prediction_ffs <- predict(predictors_sp,ffsmodel_LLTO)
+  writeRaster(prediction_ffs, 
+              filename=file.path(paste0("validation_stacks/pred_lst_aqua/lst_", date, ".tif")),
+              format="GTiff", overwrite=TRUE)
+}
 
 spplot(prediction_ffs)
 
