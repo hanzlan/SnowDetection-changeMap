@@ -80,8 +80,8 @@ df_train <- df[which(df$year %in% c("2003", "2004", "2006", "2007", "2009", "201
 df_test <- df[which(df$year %in% c("2005", "2008", "2011", "2014", "2017", "2020")), ]
 
 set.seed(123)
-df_train_small <- df_train[sample(nrow(df_train), nrow(df_train)/10), ]
-df_test_small <- df_test[sample(nrow(df_test), nrow(df_test)/10), ]
+df_train_small <- df_train[sample(nrow(df_train), nrow(df_train)/20), ]
+df_test_small <- df_test[sample(nrow(df_test), nrow(df_test)/20), ]
 
-write.csv(df_train_small,"df_train_small.csv", row.names = FALSE)
-write.csv(df_test_small,"df_test_small.csv", row.names = FALSE)
+write.csv(df_train_small,"df_train_small30.csv", row.names = FALSE)
+write.csv(df_test_small,"df_test_small30.csv", row.names = FALSE)

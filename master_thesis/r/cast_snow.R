@@ -74,7 +74,7 @@ stacklist_aqua <- list.files("validation_stacks/snow_aqua/", pattern = ".tif$", 
 
 ###run over stacklist and predict snow aqua
 for( i in 1:length(stacklist_aqua)) {
-  date <- substr(stacklist_aqua[i], 50, 57)
+  date <- substr(stacklist_aqua[i], 49, 56)
   predictors_sp <- stack(stacklist_aqua[i])
   names(predictors_sp) <- c('lag.lst', 'lst', 'doy_cos', 'rad', 'lag.rad', 'dem',
                             'lat', 'minute', 'year')

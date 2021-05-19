@@ -16,7 +16,7 @@ library(doParallel)
 
 setwd("C:/Users/andre/OneDrive/Dokumente/Masterarbeit/Data/")
 
-df <- read.csv("dataframes/df_train_small.csv")
+df <- read.csv("dataframes/df_train_small30.csv")
 head(df)
 df$lon <- round(df$lon, digits=5)
 df$lat <- round(df$lat, digits=5)
@@ -31,7 +31,7 @@ plot(data_sp,axes=T,col="black")
 df$days <- as.Date(df$days)
 df$date <- as.POSIXct(df$date, format= "%Y-%m-%d %H:%M:%S")
 df <- df[, !names(df) %in% c("lag.snow", "lag.lst", "lag.rad", "lag.wr", "prec", "eastness", "northness",
-                             "month", "year", "doy_cos_plus_209", "aspect_plus_176")]
+                             "year", "doy_cos_plus_209", "aspect_plus_176")]
 cols.num <- c("doy","snow", "lst", "rad", "wr", "lag.prec", "lon", "lat", "dem",
               "slope", "minute", "doy_cos_plus_42", "aspect_plus_338",
               "date_num")
@@ -57,13 +57,13 @@ set.seed(10)
 #                do.trace=100)
 
 indices <- CreateSpacetimeFolds(df,spacevar = "variable",
-                                timevar = "doy")
+                                timevar = "month")
 
 ffsmodel_LLTO <- ffs(df[,predictors],df$snow,
                      metric="Rsquared",
                      method="rf", 
                      minVar=3,
-                     tuneGrid=data.frame("mtry"=c(2,3,4)),
+                     tuneGrid=data.frame("mtry"=3),
                      verbose=FALSE, ntree=50,
                      trControl=trainControl(method="cv",
                                             index = indices$index),
@@ -73,7 +73,7 @@ ffsmodel_LLTO
 
 ffsmodel_LLTO$selectedvars
 
-saveRDS(ffsmodel_LLTO, "./lst_models/ffsmodel_llto.rds")
+saveRDS(ffsmodel_LLTO, "./snow_models/ffsmodel_llto.rds")
 
 plot_ffs(ffsmodel_LLTO)
 plot(varImp(ffsmodel_LLTO))
